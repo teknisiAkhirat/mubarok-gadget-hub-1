@@ -145,13 +145,13 @@ function LandingPage({ onNavigate }) {
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 onClick={() => onNavigate('catalog')}
-                className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.02]"
+                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white inline-flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.02]"
               >
                 🔍 Jelajahi Katalog
               </button>
               <button
                 onClick={() => onNavigate('service')}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3 font-semibold backdrop-blur hover:bg-white/20"
+                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-6 py-3 font-semibold backdrop-blur hover:bg-white/20"
               >
                 🛠️ Info Service
               </button>
@@ -169,7 +169,7 @@ function LandingPage({ onNavigate }) {
             <button
               key={cat.id}
               onClick={() => onNavigate('catalog', { category: cat.id })}
-              className="flex flex-col items-center rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm transition hover:border-blue-300 hover:shadow-md"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white flex flex-col items-center rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm transition hover:border-blue-300 hover:shadow-md"
             >
               <span className="text-3xl">{cat.icon}</span>
               <span className="mt-2 text-sm font-medium text-gray-900">{cat.name}</span>
@@ -187,7 +187,7 @@ function LandingPage({ onNavigate }) {
             <button
               key={p.id}
               onClick={() => onNavigate('detail', { id: p.id })}
-              className="group rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-md"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white group rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-md"
             >
               <div className="aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                 <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover transition group-hover:scale-105" />
@@ -209,7 +209,7 @@ function LandingPage({ onNavigate }) {
           <p className="mt-2 text-orange-100">Kami siap membantu. Hubungi kami atau kunjungi langsung workshop kami.</p>
           <button
             onClick={() => onNavigate('contact')}
-            className="mt-6 rounded-lg bg-white px-6 py-3 font-semibold text-orange-600 shadow-lg transition hover:scale-[1.02]"
+            className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white mt-6 rounded-lg bg-white px-6 py-3 font-semibold text-orange-600 shadow-lg transition hover:scale-[1.02]"
           >
             📞 Hubungi Kami
           </button>
@@ -248,13 +248,13 @@ function CatalogPage({ initialCategory, onNavigate }) {
             placeholder="Cari spare part, brand, atau model..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white"
           />
           <div className="flex flex-wrap gap-3">
             <select
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg border border-gray-300 px-3 py-2 text-sm"
             >
               <option value="all">Semua Kategori</option>
               {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -262,7 +262,7 @@ function CatalogPage({ initialCategory, onNavigate }) {
             <select
               value={selectedCondition}
               onChange={e => setSelectedCondition(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg border border-gray-300 px-3 py-2 text-sm"
             >
               <option value="all">Semua Kondisi</option>
               <option value="original">Original</option>
@@ -271,7 +271,7 @@ function CatalogPage({ initialCategory, onNavigate }) {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg border border-gray-300 px-3 py-2 text-sm"
             >
               <option value="name">Nama A-Z</option>
               <option value="price-asc">Harga Terendah</option>
@@ -287,7 +287,7 @@ function CatalogPage({ initialCategory, onNavigate }) {
             <button
               key={p.id}
               onClick={() => onNavigate('detail', { id: p.id })}
-              className="group rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-md"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white group rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-md"
             >
               <div className="aspect-square overflow-hidden rounded-t-xl bg-gray-100">
                 <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover transition group-hover:scale-105" />
@@ -327,7 +327,7 @@ function DetailPage({ productId, onNavigate }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <button onClick={() => onNavigate('catalog')} className="text-sm text-blue-600 hover:underline">← Kembali ke Katalog</button>
+        <button onClick={() => onNavigate('catalog')} className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white text-sm text-blue-600 hover:underline">← Kembali ke Katalog</button>
 
         <div className="mt-6 grid gap-8 md:grid-cols-2">
           {/* Image */}
@@ -388,13 +388,13 @@ function DetailPage({ productId, onNavigate }) {
             <div className="mt-6 flex flex-col gap-3">
               <button
                 onClick={() => onNavigate('contact', { product: product.name })}
-                className="w-full rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.01]"
+                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white w-full rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.01]"
               >
                 💬 Tanya / Order via WhatsApp
               </button>
               <button
                 onClick={() => onNavigate('contact')}
-                className="w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+                className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
               >
                 📧 Kirim Inquiry
               </button>
@@ -413,6 +413,9 @@ function ServicePage({ onNavigate }) {
       <div className="mx-auto max-w-6xl px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900">Informasi Service</h1>
         <p className="mt-2 text-gray-600">Layanan perbaikan smartphone profesional</p>
+
+        {/* Section heading */}
+        <h2 className="mt-8 text-xl font-semibold text-gray-900">Layanan Service Kami</h2>
 
         {/* Services */}
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -468,7 +471,7 @@ function ServicePage({ onNavigate }) {
         <div className="mt-8 text-center">
           <button
             onClick={() => onNavigate('contact')}
-            className="rounded-lg bg-orange-500 px-8 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.02]"
+            className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg bg-orange-500 px-8 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.02]"
           >
             📞 Hubungi Kami Sekarang
           </button>
@@ -491,7 +494,10 @@ function ContactPage({ productName, onNavigate }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <button onClick={() => onNavigate('catalog')} className="mb-6 text-sm text-blue-600 hover:underline">← Kembali ke Katalog</button>
+        <button
+          onClick={() => onNavigate('catalog')}
+          className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white mb-6 text-sm text-blue-600 hover:underline"
+        >← Kembali ke Katalog</button>
 
         <h2 className="text-xl font-semibold text-gray-900">Kirim Inquiry</h2>
 
@@ -523,12 +529,20 @@ function ContactPage({ productName, onNavigate }) {
                 <span className="text-5xl">✅</span>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">Inquiry Terkirim!</h3>
                 <p className="mt-2 text-sm text-gray-600">Kami akan segera menghubungi Anda via WhatsApp.</p>
-                <button
-                  onClick={() => onNavigate('landing')}
-                  className="mt-6 rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white"
-                >
-                  Kembali ke Beranda
-                </button>
+                <div className="flex flex-wrap justify-center gap-3 mt-6">
+                  <button
+                    onClick={() => onNavigate('catalog')}
+                    className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white"
+                  >
+                    Kembali ke Katalog
+                  </button>
+                  <button
+                    onClick={() => onNavigate('landing')}
+                    className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white rounded-lg bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700"
+                  >
+                    Kembali ke Beranda
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -539,7 +553,7 @@ function ContactPage({ productName, onNavigate }) {
                     required
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white"
                   />
                 </div>
                 <div>
@@ -549,7 +563,7 @@ function ContactPage({ productName, onNavigate }) {
                     required
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white"
                   />
                 </div>
                 <div>
@@ -559,12 +573,12 @@ function ContactPage({ productName, onNavigate }) {
                     rows={4}
                     value={form.message}
                     onChange={e => setForm({ ...form, message: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.01]"
+                  className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white w-full rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:scale-[1.01]"
                 >
                   💬 Kirim via WhatsApp
                 </button>
@@ -653,7 +667,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(false);
+    const t = setTimeout(() => setIsLoading(false), 200);
+    return () => clearTimeout(t);
   }, []);
 
   if (isLoading) {
@@ -671,19 +686,19 @@ function App() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <button onClick={() => navigate('landing')} className="flex items-center gap-2">
+          <button onClick={() => navigate('landing')} className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white flex items-center gap-2">
             <span className="text-xl font-bold text-blue-900">Mubarok</span>
             <span className="text-xs text-gray-500">Gadget Hub</span>
           </button>
           <nav className="flex items-center gap-4">
             {/* Desktop nav (md+) */}
-            <button onClick={() => navigate('catalog')} className="hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Katalog</button>
-            <button onClick={() => navigate('service')} className="hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Service</button>
-            <button onClick={() => navigate('contact')} className="hidden rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600 md:inline-flex">Hubungi</button>
+            <button onClick={() => navigate('catalog')} className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Katalog</button>
+            <button onClick={() => navigate('service')} className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Service</button>
+            <button onClick={() => navigate('contact')} className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white hidden rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600 md:inline-flex">Hubungi</button>
             {/* Mobile hamburger (< md) */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center rounded-lg bg-gray-100 p-2 text-gray-600 hover:bg-gray-200 md:hidden min-h-[44px] min-w-[44px]"
+              className="focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white inline-flex items-center justify-center rounded-lg bg-gray-100 p-2 text-gray-600 hover:bg-gray-200 md:hidden min-h-[44px] min-w-[44px]"
               aria-label="Menu"
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
