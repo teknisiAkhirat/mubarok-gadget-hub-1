@@ -491,8 +491,9 @@ function ContactPage({ productName, onNavigate }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900">Hubungi Kami</h1>
-        <p className="mt-2 text-gray-600">Ada pertanyaan? Siap membantu kebutuhan spare part & service Anda.</p>
+        <button onClick={() => onNavigate('catalog')} className="mb-6 text-sm text-blue-600 hover:underline">← Kembali ke Katalog</button>
+
+        <h2 className="text-xl font-semibold text-gray-900">Kirim Inquiry</h2>
 
         <div className="mt-8 grid gap-8 md:grid-cols-2">
           {/* Contact Info */}
@@ -531,7 +532,6 @@ function ContactPage({ productName, onNavigate }) {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Kirim Inquiry</h3>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Nama</label>
                   <input
@@ -661,19 +661,12 @@ function App() {
   }
 
   const navigate = (newPage, newData) => {
-    return <LoadingSkeleton />;
-  }
-
-  const navigate = (newPage, newData) => {
     setPage(newPage);
     setData(newData || {});
     window.scrollTo(0, 0);
   };
 
-  if (isLoading) return <LoadingSkeleton />;
-
   return (
-    <ErrorBoundary>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -756,7 +749,6 @@ function App() {
         </div>
       </footer>
     </div>
-    </ErrorBoundary>
   );
 }
 
