@@ -120,7 +120,7 @@ const PRODUCTS = [
 ];
 
 // Landing Page Component
-function LandingPage({ onNavigate }: { onNavigate: (page: string, data?: any) => void }) {
+function LandingPage({ onNavigate }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
@@ -138,7 +138,7 @@ function LandingPage({ onNavigate }: { onNavigate: (page: string, data?: any) =>
               Spare Part <span className="text-orange-400">Original</span> & Bergaransi
             </h1>
             <p className="mt-4 text-base text-blue-100 md:text-lg">
-              Katalog spare part smartphone terlengkap. LCD, baterai, kamera, flex cable, 
+              Katalog spare part smartphone terlengkap. LCD, baterai, kamera, flex cable,
               dan komponen lainnya. Original copotan & bergaransi toko.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -219,7 +219,7 @@ function LandingPage({ onNavigate }: { onNavigate: (page: string, data?: any) =>
 }
 
 // Catalog Page
-function CatalogPage({ initialCategory, onNavigate }: { initialCategory?: string, onNavigate: (page: string, data?: any) => void }) {
+function CatalogPage({ initialCategory, onNavigate }) {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'all');
   const [selectedCondition, setSelectedCondition] = useState('all');
@@ -239,7 +239,7 @@ function CatalogPage({ initialCategory, onNavigate }: { initialCategory?: string
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900">Katalog Spare Part</h1>
-        
+
         {/* Filters */}
         <div className="mt-6 space-y-4 rounded-xl border border-gray-200 bg-white p-4">
           <input
@@ -317,7 +317,7 @@ function CatalogPage({ initialCategory, onNavigate }: { initialCategory?: string
 }
 
 // Product Detail Page
-function DetailPage({ productId, onNavigate }: { productId: string, onNavigate: (page: string, data?: any) => void }) {
+function DetailPage({ productId, onNavigate }) {
   const product = PRODUCTS.find(p => p.id === productId);
   if (!product) return <div className="p-8 text-center">Produk tidak ditemukan</div>;
 
@@ -327,7 +327,7 @@ function DetailPage({ productId, onNavigate }: { productId: string, onNavigate: 
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <button onClick={() => onNavigate('catalog')} className="text-sm text-blue-600 hover:underline">← Kembali ke Katalog</button>
-        
+
         <div className="mt-6 grid gap-8 md:grid-cols-2">
           {/* Image */}
           <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100">
@@ -361,7 +361,7 @@ function DetailPage({ productId, onNavigate }: { productId: string, onNavigate: 
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Kategori</span>
-                <span className="font-medium">{category?.name}</span>
+                <span className="font-medium">{category && category.name}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Status Testing</span>
@@ -406,7 +406,7 @@ function DetailPage({ productId, onNavigate }: { productId: string, onNavigate: 
 }
 
 // Service Info Page
-function ServicePage({ onNavigate }: { onNavigate: (page: string, data?: any) => void }) {
+function ServicePage({ onNavigate }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -478,11 +478,11 @@ function ServicePage({ onNavigate }: { onNavigate: (page: string, data?: any) =>
 }
 
 // Contact Page
-function ContactPage({ productName, onNavigate }: { productName?: string, onNavigate: (page: string, data?: any) => void }) {
+function ContactPage({ productName, onNavigate }) {
   const [form, setForm] = useState({ name: '', phone: '', message: productName ? `Halo, saya tertarik dengan ${productName}. Apakah masih tersedia?` : '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
   };
@@ -579,9 +579,9 @@ function ContactPage({ productName, onNavigate }: { productName?: string, onNavi
 // App Shell
 function App() {
   const [page, setPage] = useState('landing');
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState({});
 
-  const navigate = (newPage: string, newData?: any) => {
+  const navigate = (newPage, newData) => {
     setPage(newPage);
     setData(newData || {});
     window.scrollTo(0, 0);
@@ -623,4 +623,7 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  createRoot(rootElement).render(<App />);
+}
