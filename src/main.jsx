@@ -1,6 +1,7 @@
 // Mubarok Gadget Hub - Smartphone Service & Spare Part Catalog
+import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Mock data
 const CATEGORIES = [
@@ -576,10 +577,92 @@ function ContactPage({ productName, onNavigate }) {
   );
 }
 
+// Error Boundary (class component)
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 text-center">
+          <span className="text-6xl">⚠️</span>
+          <h1 className="mt-4 text-2xl font-bold text-gray-900">Terjadi gangguan sementara</h1>
+          <p className="mt-2 max-w-md text-gray-600">
+            Maaf, halaman mengalami kendala. Silakan coba kembali dalam beberapa saat.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-6 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:bg-blue-700"
+          >
+            🔄 Refresh Halaman
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Loading skeleton component (inline, no extra file)
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-200 py-8">
+      <div className="mx-auto max-w-6xl px-4">
+        {/* Hero bar skeleton */}
+        <div className="mb-12 rounded-xl bg-gray-300 animate-pulse" style={{ height: '320px' }} />
+
+        {/* Product card skeletons */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="overflow-hidden rounded-xl bg-gray-300 animate-pulse"
+              style={{ aspectRatio: '1 / 1.15' }}
+            >
+              <div className="aspect-square w-full bg-gray-400" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 w-1/3 rounded bg-gray-400" />
+                <div className="h-4 w-full rounded bg-gray-400" />
+                <div className="h-4 w-2/3 rounded bg-gray-400" />
+                <div className="h-5 w-1/2 rounded bg-gray-400" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // App Shell
 function App() {
   const [page, setPage] = useState('landing');
   const [data, setData] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  const navigate = (newPage, newData) => {
+    return <LoadingSkeleton />;
+  }
 
   const navigate = (newPage, newData) => {
     setPage(newPage);
@@ -587,7 +670,10 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  if (isLoading) return <LoadingSkeleton />;
+
   return (
+    <ErrorBoundary>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -597,10 +683,60 @@ function App() {
             <span className="text-xs text-gray-500">Gadget Hub</span>
           </button>
           <nav className="flex items-center gap-4">
-            <button onClick={() => navigate('catalog')} className="text-sm font-medium text-gray-600 hover:text-blue-600">Katalog</button>
-            <button onClick={() => navigate('service')} className="text-sm font-medium text-gray-600 hover:text-blue-600">Service</button>
-            <button onClick={() => navigate('contact')} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600">Hubungi</button>
+            {/* Desktop nav (md+) */}
+            <button onClick={() => navigate('catalog')} className="hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Katalog</button>
+            <button onClick={() => navigate('service')} className="hidden items-center text-sm font-medium text-gray-600 hover:text-blue-600 md:inline-flex">Service</button>
+            <button onClick={() => navigate('contact')} className="hidden rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600 md:inline-flex">Hubungi</button>
+            {/* Mobile hamburger (< md) */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center rounded-lg bg-gray-100 p-2 text-gray-600 hover:bg-gray-200 md:hidden min-h-[44px] min-w-[44px]"
+              aria-label="Menu"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                {isOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </>
+                )}
+              </svg>
+            </button>
           </nav>
+          {/* Mobile menu overlay (< md) */}
+          {isOpen && (
+            <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setIsOpen(false)}>
+              <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-xl" onClick={e => e.stopPropagation()}>
+                <div className="flex flex-col gap-1 p-4">
+                  <button
+                    onClick={() => { navigate('landing'); setIsOpen(false); }}
+                    className="min-h-[44px] min-w-[44px] rounded-lg px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-blue-50"
+                  >
+                    Landing
+                  </button>
+                  <button
+                    onClick={() => { navigate('catalog'); setIsOpen(false); }}
+                    className="min-h-[44px] min-w-[44px] rounded-lg px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-blue-50"
+                  >
+                    Katalog
+                  </button>
+                  <button
+                    onClick={() => { navigate('service'); setIsOpen(false); }}
+                    className="min-h-[44px] min-w-[44px] rounded-lg px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-blue-50"
+                  >
+                    Service
+                  </button>
+                  <button
+                    onClick={() => { navigate('contact'); setIsOpen(false); }}
+                    className="mt-2 min-h-[44px] min-w-[44px] rounded-lg bg-orange-500 px-4 py-3 text-left text-base font-medium text-white shadow-sm hover:bg-orange-600"
+                  >
+                    Hubungi
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -620,10 +756,15 @@ function App() {
         </div>
       </footer>
     </div>
+    </ErrorBoundary>
   );
 }
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  createRoot(rootElement).render(<App />);
+  createRoot(rootElement).render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
 }
