@@ -423,10 +423,9 @@ function ServicePage({ onNavigate }) {
   ];
   const [services, setServices] = useState(fallbackServices);
   useEffect(() => {
-    if (!supabaseConfigured) return;
-    supabase.from('services').select('*').eq('active', true).order('sort_order').then(({ data }) => {
-      if (data?.length) setServices(data);
-    });
+    getCatalog().then(remote => {
+      if (remote.services?.length) setServices(remote.services);
+    }).catch(() => {});
   }, []);
   return (
     <div className="min-h-screen bg-gray-50">
