@@ -2,6 +2,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import Admin from './admin.jsx';
+import { supabaseConfigured } from './lib/supabase.js';
 
 // Mock data
 const CATEGORIES = [
@@ -769,9 +771,14 @@ function App() {
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
+  const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
   createRoot(rootElement).render(
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    isAdminRoute ? (
+      supabaseConfigured ? <Admin /> : <div className="min-h-screen grid place-items-center p-6 text-center"><div><h1 className="text-2xl font-bold">Admin belum dikonfigurasi</h1><p className="mt-2 text-slate-500">Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY di environment Cloudflare.</p></div></div>
+    ) : (
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    )
   );
 }
