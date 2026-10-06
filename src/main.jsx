@@ -3,7 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
 import Admin from './admin.jsx';
-import { supabaseConfigured } from './lib/supabase.js';
+import { getCatalog, createInquiry } from './lib/api.js';
 
 // Mock data
 const CATEGORIES = [
@@ -499,12 +499,11 @@ function ContactPage({ productName, onNavigate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const phone = form.phone.replace(/[^0-9+]/g, '');
-    if (supabaseConfigured) {
-      const { error } = await supabase.from('inquiries').insert({
-        name: form.name,
-        phone,
-        message: form.message
-      });
+    try {
+      await createInquiry({ name: form.name, phone, message: form.message });
+    } catch (error) {
+      console.error('Inquiry save failed:', error);
+    });
       if (error) {
         console.error('Inquiry save failed:', error);
       }
@@ -693,23 +692,12 @@ function App() {
   useEffect(() => {
     let mounted = true;
     const loadRemoteCatalog = async () => {
-      if (!supabaseConfigured) {
-        const t = setTimeout(() => mounted && setIsLoading(false), 200);
-        return () => clearTimeout(t);
-      }
       try {
-        const [productsResult, categoriesResult] = await Promise.all([
-          supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false }),
-          supabase.from('categories').select('*').eq('active', true).order('sort_order')
-        ]);
-        if (productsResult.data?.length) {
-          PRODUCTS.splice(0, PRODUCTS.length, ...productsResult.data.map(p => ({ ...p, images: p.image_url ? [p.image_url] : ['https://placehold.co/600x600/0b1f33/ffffff?text=MGH'], tags: p.tags || [] })));
-        }
-        if (categoriesResult.data?.length) {
-          CATEGORIES.splice(0, CATEGORIES.length, ...categoriesResult.data);
-        }
+        const remote = await getCatalog();
+        if (remote.products?.length) PRODUCTS.splice(0, PRODUCTS.length, ...remote.products);
+        if (remote.categories?.length) CATEGORIES.splice(0, CATEGORIES.length, ...remote.categories);
       } catch (error) {
-        console.warn('Remote catalog unavailable; using fallback catalog.', error);
+        console.warn('Cloudflare D1 unavailable; using fallback catalog.', error);
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -819,7 +807,7 @@ if (rootElement) {
   const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
   createRoot(rootElement).render(
     isAdminRoute ? (
-      supabaseConfigured ? <Admin /> : <div className="min-h-screen grid place-items-center p-6 text-center"><div><h1 className="text-2xl font-bold">Admin belum dikonfigurasi</h1><p className="mt-2 text-slate-500">Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY di environment Cloudflare.</p></div></div>
+      <Admin />
     ) : (
       <ErrorBoundary>
         <App />
