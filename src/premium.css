@@ -1,0 +1,27 @@
+/* Premium visual layer for Mubarok Gadget Hub */
+body{background:#f6f8fb;color:#102033}
+html{scroll-behavior:smooth}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(34,211,238,.45);outline-offset:3px}
+::selection{background:rgba(34,211,238,.25)}
+#root > div > div > section:first-child{position:relative;isolation:isolate;overflow:hidden}
+#root > div > div > section:first-child::before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(circle at 78% 38%,rgba(34,211,238,.18),transparent 26%),radial-gradient(circle at 18% 78%,rgba(255,122,24,.13),transparent 28%),linear-gradient(135deg,#061322,#0b2740 55%,#071725)}
+#root > div > div > section:first-child::after{content:"";position:absolute;right:6%;top:50%;width:min(38vw,430px);height:min(38vw,430px);z-index:-1;transform:translateY(-50%);border:1px solid rgba(34,211,238,.2);border-radius:50%;box-shadow:0 0 0 45px rgba(34,211,238,.025),0 0 100px rgba(34,211,238,.12);animation:mgh-orbit 6s ease-in-out infinite}
+#root > div > div > section:first-child > div{position:relative}
+#root > div > div > section:first-child > div::after{content:"";position:absolute;right:8%;top:50%;width:180px;height:350px;transform:translateY(-50%) perspective(700px) rotateY(-18deg) rotateX(5deg) rotateZ(2deg);border:7px solid #17283d;border-radius:32px;background:radial-gradient(circle at 70% 20%,rgba(34,211,238,.34),transparent 25%),linear-gradient(145deg,#08121f,#10283d);box-shadow:18px 28px 55px rgba(0,0,0,.42),inset 0 0 0 2px #30465a;animation:mgh-float 5s ease-in-out infinite;pointer-events:none}
+.mgh-tech-grid{position:absolute;inset:0;z-index:-1;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.16) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to right,transparent 0%,black 45%,black 100%)}
+.mgh-dashboard{position:absolute;right:7%;top:50%;width:min(31vw,360px);height:330px;transform:translateY(-50%) perspective(900px) rotateY(-14deg) rotateX(5deg);pointer-events:none;filter:drop-shadow(0 28px 45px rgba(0,0,0,.35))}
+.mgh-dashboard::before{content:"";position:absolute;inset:28px 58px;border:7px solid #17283d;border-radius:30px;background:radial-gradient(circle at 70% 22%,rgba(34,211,238,.38),transparent 24%),linear-gradient(145deg,#08121f,#10283d);box-shadow:inset 0 0 0 2px #30465a,0 0 45px rgba(34,211,238,.1);animation:mgh-float 5s ease-in-out infinite}
+.mgh-dashboard::after{content:"REPAIR LAB  /  DIAGNOSTIC ONLINE";position:absolute;left:24%;right:24%;bottom:52px;padding:9px;border:1px solid rgba(34,211,238,.25);border-radius:9px;color:#67e8f9;background:rgba(4,13,24,.7);font:700 9px/1.2 ui-monospace,monospace;text-align:center;letter-spacing:.08em}
+.mgh-status{position:absolute;padding:11px 13px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(8,23,39,.72);backdrop-filter:blur(12px);box-shadow:0 15px 35px rgba(0,0,0,.25);color:#cfe8f7;font:700 10px/1.25 ui-monospace,monospace;letter-spacing:.03em}
+.mgh-status strong{display:block;margin-top:4px;color:#fff;font-size:12px}
+.mgh-status.one{left:0;top:25px}.mgh-status.two{right:0;top:82px}.mgh-status.three{left:4px;bottom:35px}
+.mgh-scanline{position:absolute;left:28%;right:28%;top:50%;height:1px;background:linear-gradient(90deg,transparent,#22d3ee,transparent);box-shadow:0 0 16px #22d3ee;animation:mgh-scan 3s linear infinite}
+.mgh-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.mgh-card:hover{transform:translateY(-4px);box-shadow:0 18px 45px rgba(15,35,55,.11)}
+@keyframes mgh-float{0%,100%{margin-top:0}50%{margin-top:-10px}}
+@keyframes mgh-orbit{0%,100%{transform:translateY(-50%) scale(.96);opacity:.5}50%{transform:translateY(-50%) scale(1.03);opacity:.9}}
+@keyframes mgh-scan{0%{transform:translateY(-130px);opacity:0}20%,80%{opacity:1}100%{transform:translateY(130px);opacity:0}}
+@media(max-width:900px){.mgh-dashboard{position:relative;right:auto;top:auto;width:min(100%,360px);height:310px;transform:scale(.9);margin:0 auto -25px}.mgh-tech-hero::after{right:50%;top:auto;bottom:20px;transform:translateX(50%);width:330px;height:330px}.mgh-tech-grid{mask-image:linear-gradient(to bottom,transparent,black 35%,black)}} 
+@media(max-width:560px){.mgh-dashboard{transform:scale(.78);transform-origin:center top;margin-bottom:-65px}.mgh-status{font-size:9px}.mgh-status strong{font-size:11px}}

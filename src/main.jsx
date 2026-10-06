@@ -2,6 +2,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import Admin from './admin.jsx';
+import { supabaseConfigured } from './lib/supabase.js';
 
 // Mock data
 const CATEGORIES = [
@@ -408,6 +410,24 @@ function DetailPage({ productId, onNavigate }) {
 
 // Service Info Page
 function ServicePage({ onNavigate }) {
+  const fallbackServices = [
+    { title: 'Ganti LCD/Display', description: 'LCD retak, bergaris, mati total, touch tidak responsif', price_label: 'Mulai Rp 200rb', icon: '📱' },
+    { title: 'Ganti Baterai', description: 'Baterai bocor, cepat habis, tidak bisa charging', price_label: 'Mulai Rp 150rb', icon: '🔋' },
+    { title: 'Ganti Kamera', description: 'Kamera blur, tidak fokus, error tidak terdeteksi', price_label: 'Mulai Rp 250rb', icon: '📷' },
+    { title: 'Ganti Flex Cable', description: 'Flex charging, tombol power, fingerprint rusak', price_label: 'Mulai Rp 80rb', icon: '🔌' },
+    { title: 'Ganti Charging Port', description: 'Port charging longgar, tidak bisa charge, data tidak terbaca', price_label: 'Mulai Rp 120rb', icon: '⚡' },
+    { title: 'Service IC/Board', description: 'Mati total, bootloop, masalah IC power/charging', price_label: 'Mulai Rp 300rb', icon: '🔧' },
+    { title: 'Ganti Back Cover', description: 'Cover belakang retak, patah, atau ingin ganti warna', price_label: 'Mulai Rp 100rb', icon: '🔲' },
+    { title: 'Ganti Speaker/Mic', description: 'Speaker pecah, mic tidak berfungsi, earpiece error', price_label: 'Mulai Rp 80rb', icon: '🔊' },
+    { title: 'Ganti Vibrator', description: 'Vibrator tidak berfungsi atau lemah', price_label: 'Mulai Rp 60rb', icon: '📳' }
+  ];
+  const [services, setServices] = useState(fallbackServices);
+  useEffect(() => {
+    if (!supabaseConfigured) return;
+    supabase.from('services').select('*').eq('active', true).order('sort_order').then(({ data }) => {
+      if (data?.length) setServices(data);
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -419,22 +439,12 @@ function ServicePage({ onNavigate }) {
 
         {/* Services */}
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { title: 'Ganti LCD/Display', desc: 'LCD retak, bergaris, mati total, touch tidak responsif', price: 'Mulai Rp 200rb', icon: '📱' },
-            { title: 'Ganti Baterai', desc: 'Baterai bocor, cepat habis, tidak bisa charging', price: 'Mulai Rp 150rb', icon: '🔋' },
-            { title: 'Ganti Kamera', desc: 'Kamera blur, tidak fokus, error tidak terdeteksi', price: 'Mulai Rp 250rb', icon: '📷' },
-            { title: 'Ganti Flex Cable', desc: 'Flex charging, tombol power, fingerprint rusak', price: 'Mulai Rp 80rb', icon: '🔌' },
-            { title: 'Ganti Charging Port', desc: 'Port charging longgar, tidak bisa charge, data tidak terbaca', price: 'Mulai Rp 120rb', icon: '⚡' },
-            { title: 'Service IC/Board', desc: 'Mati total, bootloop, masalah IC power/charging', price: 'Mulai Rp 300rb', icon: '🔧' },
-            { title: 'Ganti Back Cover', desc: 'Cover belakang retak, patah, atau ingin ganti warna', price: 'Mulai Rp 100rb', icon: '🔲' },
-            { title: 'Ganti Speaker/Mic', desc: 'Speaker pecah, mic tidak berfungsi, earpiece error', price: 'Mulai Rp 80rb', icon: '🔊' },
-            { title: 'Ganti Vibrator', desc: 'Vibrator tidak berfungsi atau lemah', price: 'Mulai Rp 60rb', icon: '📳' },
-          ].map((svc, i) => (
+          {services.map((svc, i) => (
             <div key={i} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <span className="text-3xl">{svc.icon}</span>
               <h3 className="mt-3 text-lg font-semibold text-gray-900">{svc.title}</h3>
-              <p className="mt-1 text-sm text-gray-600">{svc.desc}</p>
-              <p className="mt-3 text-sm font-bold text-blue-700">{svc.price}</p>
+              <p className="mt-1 text-sm text-gray-600">{svc.description}</p>
+              <p className="mt-3 text-sm font-bold text-blue-700">{svc.price_label}</p>
             </div>
           ))}
         </div>
@@ -486,8 +496,22 @@ function ContactPage({ productName, onNavigate }) {
   const [form, setForm] = useState({ name: '', phone: '', message: productName ? `Halo, saya tertarik dengan ${productName}. Apakah masih tersedia?` : '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const phone = form.phone.replace(/[^0-9+]/g, '');
+    if (supabaseConfigured) {
+      const { error } = await supabase.from('inquiries').insert({
+        name: form.name,
+        phone,
+        message: form.message
+      });
+      if (error) {
+        console.error('Inquiry save failed:', error);
+      }
+    }
+    const waMessage = encodeURIComponent(form.message);
+    const waPhone = '62895604901090';
+    window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   };
 
@@ -667,8 +691,31 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 200);
-    return () => clearTimeout(t);
+    let mounted = true;
+    const loadRemoteCatalog = async () => {
+      if (!supabaseConfigured) {
+        const t = setTimeout(() => mounted && setIsLoading(false), 200);
+        return () => clearTimeout(t);
+      }
+      try {
+        const [productsResult, categoriesResult] = await Promise.all([
+          supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false }),
+          supabase.from('categories').select('*').eq('active', true).order('sort_order')
+        ]);
+        if (productsResult.data?.length) {
+          PRODUCTS.splice(0, PRODUCTS.length, ...productsResult.data.map(p => ({ ...p, images: p.image_url ? [p.image_url] : ['https://placehold.co/600x600/0b1f33/ffffff?text=MGH'], tags: p.tags || [] })));
+        }
+        if (categoriesResult.data?.length) {
+          CATEGORIES.splice(0, CATEGORIES.length, ...categoriesResult.data);
+        }
+      } catch (error) {
+        console.warn('Remote catalog unavailable; using fallback catalog.', error);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    loadRemoteCatalog();
+    return () => { mounted = false; };
   }, []);
 
   if (isLoading) {
@@ -769,9 +816,14 @@ function App() {
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
+  const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
   createRoot(rootElement).render(
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    isAdminRoute ? (
+      supabaseConfigured ? <Admin /> : <div className="min-h-screen grid place-items-center p-6 text-center"><div><h1 className="text-2xl font-bold">Admin belum dikonfigurasi</h1><p className="mt-2 text-slate-500">Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_PUBLISHABLE_KEY di environment Cloudflare.</p></div></div>
+    ) : (
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    )
   );
 }
