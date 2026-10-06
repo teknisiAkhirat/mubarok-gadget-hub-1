@@ -502,7 +502,7 @@ function ContactPage({ productName, onNavigate }) {
       await createInquiry({ name: form.name, phone, message: form.message });
     } catch (error) {
       console.error('Inquiry save failed:', error);
-    });
+    }
     const waMessage = encodeURIComponent(form.message);
     const waPhone = '62895604901090';
     window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank', 'noopener,noreferrer');
