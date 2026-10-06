@@ -68,10 +68,18 @@ create policy "admin manage services" on public.services for all to authenticate
 using (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())))
 with check (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())));
 
-drop policy if exists "admin manage inquiries" on public.inquiries;
-create policy "admin manage inquiries" on public.inquiries for select, update, delete to authenticated
+drop policy if exists "admin read inquiries" on public.inquiries;
+create policy "admin read inquiries" on public.inquiries for select to authenticated
+using (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())));
+
+drop policy if exists "admin update inquiries" on public.inquiries;
+create policy "admin update inquiries" on public.inquiries for update to authenticated
 using (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())))
 with check (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())));
+
+drop policy if exists "admin delete inquiries" on public.inquiries;
+create policy "admin delete inquiries" on public.inquiries for delete to authenticated
+using (exists (select 1 from public.admin_users a where a.user_id = (select auth.uid())));
 
 create index if not exists products_category_idx on public.products(category_id);
 create index if not exists products_active_idx on public.products(active);
