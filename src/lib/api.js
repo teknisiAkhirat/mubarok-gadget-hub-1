@@ -9,3 +9,10 @@ export async function apiFetch(path, options = {}) {
 
 export const getCatalog = () => apiFetch('/api/catalog');
 export const createInquiry = (payload) => apiFetch('/api/inquiries', { method: 'POST', body: JSON.stringify(payload) });
+
+export const adminLogin = (email, password) => apiFetch('/api/admin/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+export const adminLogout = () => apiFetch('/api/admin/logout', { method: 'POST' });
+export const adminList = (table) => apiFetch('/api/admin/' + table);
+export const adminCreate = (table, payload) => apiFetch('/api/admin/' + table, { method: 'POST', body: JSON.stringify(payload) });
+export const adminUpdate = (table, id, payload) => apiFetch('/api/admin/' + table + '/' + id, { method: 'PATCH', body: JSON.stringify(payload) });
+export const adminDelete = (table, id) => apiFetch('/api/admin/' + table + '/' + id, { method: 'DELETE' });
