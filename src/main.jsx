@@ -488,8 +488,22 @@ function ContactPage({ productName, onNavigate }) {
   const [form, setForm] = useState({ name: '', phone: '', message: productName ? `Halo, saya tertarik dengan ${productName}. Apakah masih tersedia?` : '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const phone = form.phone.replace(/[^0-9+]/g, '');
+    if (supabaseConfigured) {
+      const { error } = await supabase.from('inquiries').insert({
+        name: form.name,
+        phone,
+        message: form.message
+      });
+      if (error) {
+        console.error('Inquiry save failed:', error);
+      }
+    }
+    const waMessage = encodeURIComponent(form.message);
+    const waPhone = '62895604901090';
+    window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   };
 
@@ -669,8 +683,31 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 200);
-    return () => clearTimeout(t);
+    let mounted = true;
+    const loadRemoteCatalog = async () => {
+      if (!supabaseConfigured) {
+        const t = setTimeout(() => mounted && setIsLoading(false), 200);
+        return () => clearTimeout(t);
+      }
+      try {
+        const [productsResult, categoriesResult] = await Promise.all([
+          supabase.from('products').select('*').eq('active', true).order('created_at', { ascending: false }),
+          supabase.from('categories').select('*').eq('active', true).order('sort_order')
+        ]);
+        if (productsResult.data?.length) {
+          PRODUCTS.splice(0, PRODUCTS.length, ...productsResult.data.map(p => ({ ...p, images: p.image_url ? [p.image_url] : ['https://placehold.co/600x600/0b1f33/ffffff?text=MGH'], tags: p.tags || [] })));
+        }
+        if (categoriesResult.data?.length) {
+          CATEGORIES.splice(0, CATEGORIES.length, ...categoriesResult.data);
+        }
+      } catch (error) {
+        console.warn('Remote catalog unavailable; using fallback catalog.', error);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    loadRemoteCatalog();
+    return () => { mounted = false; };
   }, []);
 
   if (isLoading) {
