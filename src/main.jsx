@@ -503,10 +503,6 @@ function ContactPage({ productName, onNavigate }) {
     } catch (error) {
       console.error('Inquiry save failed:', error);
     });
-      if (error) {
-        console.error('Inquiry save failed:', error);
-      }
-    }
     const waMessage = encodeURIComponent(form.message);
     const waPhone = '62895604901090';
     window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank', 'noopener,noreferrer');
