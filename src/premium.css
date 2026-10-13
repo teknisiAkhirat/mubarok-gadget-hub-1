@@ -25,3 +25,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 @keyframes mgh-scan{0%{transform:translateY(-130px);opacity:0}20%,80%{opacity:1}100%{transform:translateY(130px);opacity:0}}
 @media(max-width:900px){.mgh-dashboard{position:relative;right:auto;top:auto;width:min(100%,360px);height:310px;transform:scale(.9);margin:0 auto -25px}.mgh-tech-hero::after{right:50%;top:auto;bottom:20px;transform:translateX(50%);width:330px;height:330px}.mgh-tech-grid{mask-image:linear-gradient(to bottom,transparent,black 35%,black)}} 
 @media(max-width:560px){.mgh-dashboard{transform:scale(.78);transform-origin:center top;margin-bottom:-65px}.mgh-status{font-size:9px}.mgh-status strong{font-size:11px}}
+
+/* Fix HP: ilustrasi smartphone tidak boleh menutupi teks hero */
+@media(max-width:900px){#root > div > div > section:first-child > div::after{display:none}#root > div > div > section:first-child::after{right:50%;top:auto;bottom:-140px;transform:translateX(50%);opacity:.3;animation:none}}
