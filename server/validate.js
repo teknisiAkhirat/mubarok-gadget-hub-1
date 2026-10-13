@@ -44,7 +44,7 @@ export function validateCategory(b) {
   if (!SLUG.test(slug)) e.push('Slug tidak valid.');
   const sort = toInt(b.sort_order);
   if (!(sort >= 0 && sort <= 100000)) e.push('Urutan tidak valid.');
-  return { errors: e, data: { name, slug, description: str(b.description).slice(0, 2000), sort_order: sort, is_active: b.active === false ? 0 : 1 } };
+  return { errors: e, data: { name, slug, icon: str(b.icon).slice(0, 16), description: str(b.description).slice(0, 2000), sort_order: sort, is_active: b.active === false ? 0 : 1 } };
 }
 export function validateService(b) {
   const e = [];

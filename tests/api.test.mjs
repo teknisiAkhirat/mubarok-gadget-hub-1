@@ -87,3 +87,9 @@ test('SQL injection lewat id/nama tidak berdampak', async () => {
   assert.equal((await call(e, 'GET', ['products'], null, ck)).status, 200);
   assert.equal((await call(e, 'GET', ['users'], null, ck)).status, 404);
 });
+test('kategori menyimpan icon', async () => {
+  const e = await env(); const ck = await cookie(e);
+  const r = await call(e, 'POST', ['categories'], { name: 'LCD', icon: '📱' }, ck);
+  assert.equal(r.status, 201);
+  assert.equal((await r.json()).icon, '📱');
+});
