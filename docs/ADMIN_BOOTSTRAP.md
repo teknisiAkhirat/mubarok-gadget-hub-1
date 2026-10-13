@@ -1,40 +1,38 @@
-# MGH Admin Bootstrap
+# MGH — Setup Cloudflare (D1 + Admin)
 
-The dashboard is available at **/admin**.
+Semua langkah di bawah dilakukan **pemilik** di komputer/Termux sendiri. Jangan tempel secret ke chat, issue, atau PR.
 
-## 1. Configure Cloudflare
+## 1. Buat database D1 (sekali)
+```
+npx wrangler login
+npx wrangler d1 create mgh-db
+```
+Salin `database_id` ke `wrangler.toml` (ID bukan secret), commit.
 
-Add these build-time environment variables to the Cloudflare Pages project:
-
-- `VITE_SUPABASE_URL` = `https://hitmyfexknnthllsujrf.supabase.co`
-- `VITE_SUPABASE_PUBLISHABLE_KEY` = the project's **publishable** key (not a service-role/secret key).
-
-Then redeploy.
-
-## 2. Create the first admin account
-
-In Supabase Dashboard → Authentication → Users, create the email/password user you want to use for MGH Admin.
-
-After the user exists, run this SQL once in the Supabase SQL Editor, replacing the email:
-
-```sql
-insert into public.admin_users (user_id)
-select id from auth.users
-where email = 'YOUR-ADMIN-EMAIL@example.com'
-on conflict (user_id) do nothing;
+## 2. Terapkan skema
+```
+npx wrangler d1 migrations apply mgh-db --local    # uji lokal dulu
+npx wrangler d1 migrations apply mgh-db --remote   # produksi
 ```
 
-Do not put a service-role key in the browser or in Cloudflare `VITE_*` variables.
+## 3. Buat password admin (hash, bukan teks biasa)
+```
+node scripts/hash-password.mjs 'PasswordPanjangMinimal12'
+```
+Simpan keluaran `pbkdf2$...` sebagai secret, bukan di Git:
+```
+npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name mubarok-gadget-hub
+npx wrangler pages secret put ADMIN_EMAIL --project-name mubarok-gadget-hub
+npx wrangler pages secret put ADMIN_SESSION_SECRET --project-name mubarok-gadget-hub   # string acak >= 32 karakter
+```
+Binding `MGH_DB` dipasang di dashboard Pages → Settings → Bindings → D1 (Production & Preview, gunakan database terpisah untuk preview bila memungkinkan).
 
-## 3. Use the dashboard
+## 4. Deploy
+Hubungkan repo ke Cloudflare Pages (build: `npm run build`, output: `dist`), lalu buka `/admin`.
 
-Open `/admin` and sign in.
+## Pengujian
+`npm test` (memakai SQLite in-memory, tidak menyentuh database produksi).
 
-The dashboard provides:
-- overview: product count, total stock, services, new inquiries
-- products: add/edit/delete, price, stock, category, photo URL, condition, warranty, featured/active
-- categories: add/edit/delete
-- services: add/edit/delete
-- inquiries: view and update status
-
-Public catalog/service pages read active records from Supabase when data exists, while the original demo data remains as a fallback during bootstrap.
+## Catatan keamanan yang masih manual
+- Pasang Rate Limiting rule Cloudflare untuk `/api/admin/login` dan `/api/inquiries`.
+- Frontend lama masih memuat `src/lib/supabase.js`; tidak dipakai untuk data, boleh dihapus pada PR berikutnya.
