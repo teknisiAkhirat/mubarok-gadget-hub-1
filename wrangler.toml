@@ -1,0 +1,10 @@
+name = "mubarok-gadget-hub"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "MGH_DB"
+database_name = "mgh-db"
+# Isi dengan ID dari `wrangler d1 create mgh-db` (ID bukan secret).
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
