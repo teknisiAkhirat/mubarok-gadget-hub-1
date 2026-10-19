@@ -21,9 +21,9 @@ node scripts/hash-password.mjs 'PasswordPanjangMinimal12'
 ```
 Simpan keluaran `pbkdf2$...` sebagai secret, bukan di Git:
 ```
-npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name mubarok-gadget-hub
-npx wrangler pages secret put ADMIN_EMAIL --project-name mubarok-gadget-hub
-npx wrangler pages secret put ADMIN_SESSION_SECRET --project-name mubarok-gadget-hub   # string acak >= 32 karakter
+npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name mubarok-gadget-hub-1
+npx wrangler pages secret put ADMIN_EMAIL --project-name mubarok-gadget-hub-1
+npx wrangler pages secret put ADMIN_SESSION_SECRET --project-name mubarok-gadget-hub-1   # string acak >= 32 karakter
 ```
 Binding `MGH_DB` dipasang di dashboard Pages → Settings → Bindings → D1 (Production & Preview, gunakan database terpisah untuk preview bila memungkinkan).
 
