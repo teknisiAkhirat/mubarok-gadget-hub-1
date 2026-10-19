@@ -2,6 +2,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import Admin from './admin.jsx';
+import { getCatalog, createInquiry } from './lib/api.js';
 
 // Mock data
 const CATEGORIES = [
@@ -408,6 +410,23 @@ function DetailPage({ productId, onNavigate }) {
 
 // Service Info Page
 function ServicePage({ onNavigate }) {
+  const fallbackServices = [
+    { title: 'Ganti LCD/Display', description: 'LCD retak, bergaris, mati total, touch tidak responsif', price_label: 'Mulai Rp 200rb', icon: '📱' },
+    { title: 'Ganti Baterai', description: 'Baterai bocor, cepat habis, tidak bisa charging', price_label: 'Mulai Rp 150rb', icon: '🔋' },
+    { title: 'Ganti Kamera', description: 'Kamera blur, tidak fokus, error tidak terdeteksi', price_label: 'Mulai Rp 250rb', icon: '📷' },
+    { title: 'Ganti Flex Cable', description: 'Flex charging, tombol power, fingerprint rusak', price_label: 'Mulai Rp 80rb', icon: '🔌' },
+    { title: 'Ganti Charging Port', description: 'Port charging longgar, tidak bisa charge, data tidak terbaca', price_label: 'Mulai Rp 120rb', icon: '⚡' },
+    { title: 'Service IC/Board', description: 'Mati total, bootloop, masalah IC power/charging', price_label: 'Mulai Rp 300rb', icon: '🔧' },
+    { title: 'Ganti Back Cover', description: 'Cover belakang retak, patah, atau ingin ganti warna', price_label: 'Mulai Rp 100rb', icon: '🔲' },
+    { title: 'Ganti Speaker/Mic', description: 'Speaker pecah, mic tidak berfungsi, earpiece error', price_label: 'Mulai Rp 80rb', icon: '🔊' },
+    { title: 'Ganti Vibrator', description: 'Vibrator tidak berfungsi atau lemah', price_label: 'Mulai Rp 60rb', icon: '📳' }
+  ];
+  const [services, setServices] = useState(fallbackServices);
+  useEffect(() => {
+    getCatalog().then(remote => {
+      if (remote.services?.length) setServices(remote.services);
+    }).catch(() => {});
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -419,22 +438,12 @@ function ServicePage({ onNavigate }) {
 
         {/* Services */}
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { title: 'Ganti LCD/Display', desc: 'LCD retak, bergaris, mati total, touch tidak responsif', price: 'Mulai Rp 200rb', icon: '📱' },
-            { title: 'Ganti Baterai', desc: 'Baterai bocor, cepat habis, tidak bisa charging', price: 'Mulai Rp 150rb', icon: '🔋' },
-            { title: 'Ganti Kamera', desc: 'Kamera blur, tidak fokus, error tidak terdeteksi', price: 'Mulai Rp 250rb', icon: '📷' },
-            { title: 'Ganti Flex Cable', desc: 'Flex charging, tombol power, fingerprint rusak', price: 'Mulai Rp 80rb', icon: '🔌' },
-            { title: 'Ganti Charging Port', desc: 'Port charging longgar, tidak bisa charge, data tidak terbaca', price: 'Mulai Rp 120rb', icon: '⚡' },
-            { title: 'Service IC/Board', desc: 'Mati total, bootloop, masalah IC power/charging', price: 'Mulai Rp 300rb', icon: '🔧' },
-            { title: 'Ganti Back Cover', desc: 'Cover belakang retak, patah, atau ingin ganti warna', price: 'Mulai Rp 100rb', icon: '🔲' },
-            { title: 'Ganti Speaker/Mic', desc: 'Speaker pecah, mic tidak berfungsi, earpiece error', price: 'Mulai Rp 80rb', icon: '🔊' },
-            { title: 'Ganti Vibrator', desc: 'Vibrator tidak berfungsi atau lemah', price: 'Mulai Rp 60rb', icon: '📳' },
-          ].map((svc, i) => (
+          {services.map((svc, i) => (
             <div key={i} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <span className="text-3xl">{svc.icon}</span>
               <h3 className="mt-3 text-lg font-semibold text-gray-900">{svc.title}</h3>
-              <p className="mt-1 text-sm text-gray-600">{svc.desc}</p>
-              <p className="mt-3 text-sm font-bold text-blue-700">{svc.price}</p>
+              <p className="mt-1 text-sm text-gray-600">{svc.description}</p>
+              <p className="mt-3 text-sm font-bold text-blue-700">{svc.price_label}</p>
             </div>
           ))}
         </div>
@@ -486,8 +495,17 @@ function ContactPage({ productName, onNavigate }) {
   const [form, setForm] = useState({ name: '', phone: '', message: productName ? `Halo, saya tertarik dengan ${productName}. Apakah masih tersedia?` : '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const phone = form.phone.replace(/[^0-9+]/g, '');
+    try {
+      await createInquiry({ name: form.name, phone, message: form.message });
+    } catch (error) {
+      console.error('Inquiry save failed:', error);
+    }
+    const waMessage = encodeURIComponent(form.message);
+    const waPhone = '62895604901090';
+    window.open(`https://wa.me/${waPhone}?text=${waMessage}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   };
 
@@ -667,8 +685,20 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 200);
-    return () => clearTimeout(t);
+    let mounted = true;
+    const loadRemoteCatalog = async () => {
+      try {
+        const remote = await getCatalog();
+        if (remote.products?.length) PRODUCTS.splice(0, PRODUCTS.length, ...remote.products);
+        if (remote.categories?.length) CATEGORIES.splice(0, CATEGORIES.length, ...remote.categories);
+      } catch (error) {
+        console.warn('Cloudflare D1 unavailable; using fallback catalog.', error);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    loadRemoteCatalog();
+    return () => { mounted = false; };
   }, []);
 
   if (isLoading) {
@@ -769,9 +799,14 @@ function App() {
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
+  const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/');
   createRoot(rootElement).render(
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    isAdminRoute ? (
+      <Admin />
+    ) : (
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    )
   );
 }
