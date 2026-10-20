@@ -2,6 +2,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useState, useEffect } from 'react';
+import { Cog } from 'lucide-react';
 import Admin from './admin.jsx';
 import { getCatalog, createInquiry } from './lib/api.js';
 
@@ -646,6 +647,21 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Reusable gear loader for first load and every public-page transition.
+function GearLoader({ label = 'Memproses...', initial = false }) {
+  return (
+    <div className={initial ? 'mgh-transition-overlay mgh-loading-overlay' : 'mgh-transition-overlay'} role="status" aria-live="polite">
+      <div className="mgh-gear-stage" aria-hidden="true">
+        <Cog className="mgh-gear mgh-gear-main" strokeWidth={1.35} />
+        <Cog className="mgh-gear mgh-gear-small" strokeWidth={1.5} />
+        <span className="mgh-gear-core" />
+      </div>
+      <span className="mgh-loader-label">{label}</span>
+      <span className="mgh-loader-caption">MUBAROK GADGET HUB</span>
+    </div>
+  );
+}
+
 // Loading skeleton component (inline, no extra file)
 function LoadingSkeleton() {
   return (
@@ -701,14 +717,21 @@ function App() {
     return () => { mounted = false; };
   }, []);
 
+  const [isNavigating, setIsNavigating] = useState(false);
+
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <><LoadingSkeleton /><GearLoader label="Menyiapkan katalog..." /></>;
   }
 
   const navigate = (newPage, newData) => {
-    setPage(newPage);
-    setData(newData || {});
-    window.scrollTo(0, 0);
+    if (isNavigating || (newPage === page && JSON.stringify(newData || {}) === JSON.stringify(data))) return;
+    setIsNavigating(true);
+    window.setTimeout(() => {
+      setPage(newPage);
+      setData(newData || {});
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.setTimeout(() => setIsNavigating(false), 320);
+    }, 190);
   };
 
   return (
@@ -779,11 +802,15 @@ function App() {
       </header>
 
       {/* Pages */}
+      <div className={isNavigating ? 'mgh-page-stage is-transitioning' : 'mgh-page-stage'} key={page}>
       {page === 'landing' && <LandingPage onNavigate={navigate} />}
       {page === 'catalog' && <CatalogPage initialCategory={data.category} onNavigate={navigate} />}
       {page === 'detail' && <DetailPage productId={data.id} onNavigate={navigate} />}
       {page === 'service' && <ServicePage onNavigate={navigate} />}
       {page === 'contact' && <ContactPage productName={data.product} onNavigate={navigate} />}
+
+      </div>
+      {isNavigating && <GearLoader label="Membuka menu..." />}
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-gray-900 py-8 text-gray-400">
