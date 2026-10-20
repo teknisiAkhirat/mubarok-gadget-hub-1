@@ -4,6 +4,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { onRequest as admin } from '../functions/api/admin/[[path]].js';
 import { onRequestPost as login } from '../functions/api/admin/login.js';
+import { onRequestPost as uploadImage } from '../functions/api/admin/upload.js';
+import { onRequestGet as getImage } from '../functions/api/images/[[path]].js';
 import { onRequestGet as catalog } from '../functions/api/catalog.js';
 import { hashPassword, createSessionToken, isAuthorized } from '../server/auth.js';
 
@@ -92,4 +94,45 @@ test('kategori menyimpan icon', async () => {
   const r = await call(e, 'POST', ['categories'], { name: 'LCD', icon: '📱' }, ck);
   assert.equal(r.status, 201);
   assert.equal((await r.json()).icon, '📱');
+});
+
+test('upload gambar membutuhkan sesi admin dan binding R2', async () => {
+  const e = await env();
+  const bytes = Uint8Array.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0x00]);
+  const makeRequest = async (cookieValue) => {
+    const form = new FormData();
+    form.append('image', new Blob([bytes], { type: 'image/png' }), 'produk.png');
+    return uploadImage({ env: e, request: new Request('https://mgh.test/api/admin/upload', { method: 'POST', headers: cookieValue ? { Cookie: cookieValue } : {}, body: form }) });
+  };
+  assert.equal((await makeRequest(null)).status, 401);
+  e.MGH_IMAGES = { put: async () => {} };
+  const response = await makeRequest(await cookie(e));
+  assert.equal(response.status, 201);
+  assert.match((await response.json()).url, /^\/api\/images\/products\//);
+});
+test('upload gambar menolak format palsu dan gambar terlalu besar', async () => {
+  const e = await env(); e.MGH_IMAGES = { put: async () => { throw new Error('must not store invalid image'); } };
+  const ck = await cookie(e);
+  const invalid = new FormData();
+  invalid.append('image', new Blob(['not an image'], { type: 'image/png' }), 'bad.png');
+  const bad = await uploadImage({ env: e, request: new Request('https://mgh.test/api/admin/upload', { method: 'POST', headers: { Cookie: ck }, body: invalid }) });
+  assert.equal(bad.status, 415);
+  const large = new FormData();
+  large.append('image', new Blob([new Uint8Array(8 * 1024 * 1024 + 1)], { type: 'image/png' }), 'large.png');
+  const tooLarge = await uploadImage({ env: e, request: new Request('https://mgh.test/api/admin/upload', { method: 'POST', headers: { Cookie: ck }, body: large }) });
+  assert.equal(tooLarge.status, 413);
+});
+test('endpoint gambar menyajikan object R2 dengan header aman', async () => {
+  const e = await env();
+  const body = new Uint8Array([1, 2, 3]);
+  e.MGH_IMAGES = { get: async key => key === 'products/test.png' ? {
+    body: new Response(body).body, httpEtag: '"etag-test"', httpMetadata: { contentType: 'image/png', cacheControl: 'public, max-age=3600' },
+    writeHttpMetadata(headers) { headers.set('Content-Type', 'image/png'); }
+  } : null };
+  const response = await getImage({ env: e, params: { path: ['products', 'test.png'] } });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Content-Type'), 'image/png');
+  assert.equal(response.headers.get('X-Content-Type-Options'), 'nosniff');
+  assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [...body]);
+  assert.equal((await getImage({ env: e, params: { path: ['..', 'test.png'] } })).status, 404);
 });

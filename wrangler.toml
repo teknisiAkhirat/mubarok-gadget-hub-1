@@ -8,3 +8,7 @@ database_name = "mgh-db"
 # Isi dengan ID dari `wrangler d1 create mgh-db` (ID bukan secret).
 database_id = "e10413ef-4b8c-4555-acb2-b84da06af00c"
 migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "MGH_IMAGES"
+bucket_name = "mgh-product-images"
